@@ -71,7 +71,7 @@ class UserModel
 
         $data = $inputFilter->getValues();
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        $data['id'] = (Uuid::uuid4())->getString();
+        $data['id'] = (Uuid::uuid4())->toString();
 
         $sth = $this->pdo->prepare(
             'INSERT INTO user (id, name, email, password) ' .
@@ -97,7 +97,8 @@ class UserModel
      */
     public function updateUser(string $id, array $data, UserInputFilter $inputFilter): UserEntity
     {
-        if (empty($this->getUser($id))) {
+        $user = $this->getUser($id);
+        if (empty($user)) {
             throw Exception\NoResourceFoundException::create('User not found');
         }
 
@@ -112,20 +113,16 @@ class UserModel
         }
         $params = [];
         foreach ($data as $key => $value) {
-            $params[] = sprintf("%s=:%s", $key, $key);
+            $params[] = sprintf("%s = :%s", $key, $key);
         }
         $sth = $this->pdo->prepare(sprintf(
             "UPDATE user SET %s WHERE id = :id",
-            implode(',', $params)
+            implode(', ', $params)
         ));
-        foreach ($data as $key => $value) {
-            $sth->bindValue(':' . $key, $value);
-        }
-        if ($sth->execute() === false) {
+        $data['id'] = $id;
+        if ($sth->execute($data) === false) {
             $this->throwRuntimeException($sth);
         }
-        $data['id'] = $id;
-        $user = new UserEntity();
         $user->exchangeArray($data);
         return $user;
     }
@@ -138,7 +135,7 @@ class UserModel
      */
     public function deleteUser($id): bool
     {
-        $sth = $this->pdo('DELETE FROM user WHERE id = :id');
+        $sth = $this->pdo->prepare('DELETE FROM user WHERE id = :id');
         $sth->bindParam(':id', $id);
         if ($sth->execute() === false) {
             throw Exception\NoResourceFoundException::create('User not found');
@@ -148,10 +145,10 @@ class UserModel
 
     protected function throwRuntimeException(PDOStatement $sth): void
     {
-        throw Exception\RuntimeException(sprintf(
+        throw Exception\RuntimeException::create(sprintf(
             "Database error (%s): %s",
             $sth->errorCode(),
-            $sth->errorInfo()
+            print_r($sth->errorInfo(), true)
         ));
     }
 }

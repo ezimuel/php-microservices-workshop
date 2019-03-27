@@ -9,7 +9,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 
-class Authentication implements MiddlewareInterface
+class LoggerMiddleware implements MiddlewareInterface
 {
     protected $esClient;
 
@@ -25,13 +25,19 @@ class Authentication implements MiddlewareInterface
         $end = microtime(true);
 
         $params = [
-            'index' => 'my_index',
-            'type' => 'my_type',
-            'id' => 'my_id',
+            'index' => sprintf("log-%d-%d", date("m"), date("Y")),
+            'type' => 'log',
             'body' => [
-                // request and response
-            ]
+                'ip_address' => $request->getAttribute('ip_address'),
+                'date' => date("c", time()),
+                'method' => $request->getMethod(),
+                'url' => $request->getUri()->getPath(),
+                'status' => $response->getStatusCode(),
+                'size' => mb_strlen((string) $response->getBody(), '8bit'),
+                'execution' => sprintf("%.2f ms", ($end - $start) * 1000)
+              ]   
         ];
         $this->esClient->index($params);
+        return $response;
     }
 }

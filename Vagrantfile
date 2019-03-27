@@ -10,7 +10,7 @@ echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
 # Install dependencies
 sudo add-apt-repository ppa:ondrej/php
 apt-get update
-apt-get install -y git curl sqlite3 php7.3-cli php7.3-dev php7.3-sqlite3 php7.3-xml php7.3-zip php7.3-mbstring httpie openjdk-11-jdk bash-completion
+apt-get install -y git curl sqlite3 php7.3-cli php7.3-dev php7.3-sqlite3 php7.3-xml php7.3-zip php7.3-mbstring php7.3-curl httpie openjdk-11-jdk bash-completion
 yes "n" | pecl install swoole
 echo "extension=swoole.so" > /etc/php/7.3/mods-available/swoole.ini
 ln -s /etc/php/7.3/mods-available/swoole.ini /etc/php/7.3/cli/conf.d/20-swoole.ini
@@ -32,6 +32,12 @@ curl -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch
 tar -xf elasticsearch-6.6.2.tar.gz
 rm elasticsearch-6.6.2.tar.gz
 chown vagrant:vagrant elasticsearch-6.6.2 -R
+
+#Install Kibana
+cd /home/vagrant
+curl -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.6.2-amd64.deb
+dpkg -i kibana-6.6.2-amd64.deb
+
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

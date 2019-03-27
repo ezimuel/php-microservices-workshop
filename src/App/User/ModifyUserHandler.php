@@ -33,14 +33,14 @@ class ModifyUserHandler implements RequestHandlerInterface
 
     public function patch(ServerRequestInterface $request) : ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getAttribute('id');
         $user = $this->model->updateUser($id, $request->getParsedBody(), $this->inputFilter);
         return $this->createResponse($request, $user);
     }
 
     public function delete(ServerRequestInterface $request) : ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getAttribute('id');
         $this->model->deleteUser($id);
         return new EmptyResponse(204);
     }

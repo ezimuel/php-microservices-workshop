@@ -20,8 +20,14 @@ class UserEntity
 
     public function exchangeArray(array $array)
     {
-        $this->id    = $array['id'];
-        $this->name  = $array['name'];
-        $this->email = $array['email'];
+        if (isset($array['id'])) {
+          $this->id = $array['id'];
+        }
+        if (isset($array['name'])) {
+          $this->name = $array['name'];
+        }
+        if (isset($array['email'])) {
+          $this->email = $array['email'];
+        }
     }
 }
