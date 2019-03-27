@@ -42,11 +42,10 @@ SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'bento/ubuntu-18.04'
-  config.vm.network "forwarded_port", guest: 8080, host: 8088
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
   config.vm.synced_folder ".", "/home/vagrant/php-microservices-workshop", id: "vagrant-root",
      owner: "vagrant",
-     group: "vagrant",
-     mount_options: ["dmode=777,fmode=666"]
+     group: "vagrant"
   config.vm.provision 'shell', inline: $script
 
   config.vm.provider "virtualbox" do |vb|
