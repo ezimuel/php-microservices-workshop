@@ -16,7 +16,9 @@ services:
             - COMPOSER_ALLOW_SUPERUSER=1
         command: >
             sh -c "composer install -d /app &&
+            sqlite3 /app/data/db/users.sqlite < /app/data/db/users.sql &&
             cp /app/docker.global.php /app/config/autoload &&
+            cp /app/config/autoload/development.local.php.dist /app/config/autoload/development.local.php &&
             /app/vendor/bin/zend-expressive-swoole start"
 
     elasticsearch:
