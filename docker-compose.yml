@@ -20,6 +20,7 @@ services:
             /app/vendor/bin/zend-expressive-swoole start"
 
     elasticsearch:
+        restart: always
         image: docker.elastic.co/elasticsearch/elasticsearch:6.6.2
         container_name: elasticsearch_662
         environment:
@@ -41,6 +42,7 @@ services:
             hard: 65536
 
     kibana:
+        restart: always
         image: docker.elastic.co/kibana/kibana:6.6.2
         container_name: kibana_662
         environment:
