@@ -22,4 +22,11 @@ return [
             'template_error' => 'error::error',
         ],
     ],
+    
+    'zend-expressive-swoole' => [
+        'swoole-http-server' => [
+            'host' => '0.0.0.0',
+            'port' => 8080
+        ],
+    ],
 ];

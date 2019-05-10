@@ -1,0 +1,3 @@
+cluster.name: "chimeo-docker-cluster"
+node.name: "chimeo-docker-single-node"
+network.host: 0.0.0.0

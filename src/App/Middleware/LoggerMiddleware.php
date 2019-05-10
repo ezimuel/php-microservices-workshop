@@ -35,7 +35,7 @@ class LoggerMiddleware implements MiddlewareInterface
                 'status' => $response->getStatusCode(),
                 'size' => mb_strlen((string) $response->getBody(), '8bit'),
                 'execution' => sprintf("%.2f ms", ($end - $start) * 1000)
-              ]   
+              ]
         ];
         $this->esClient->index($params);
         return $response;

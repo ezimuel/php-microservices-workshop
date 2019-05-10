@@ -12,48 +12,44 @@ services:
             - "8080:8080"
         volumes:
             - .:/app
-        command: ./vendor/bin/zend-expressive-swoole start
+        environment:
+            - COMPOSER_ALLOW_SUPERUSER=1
+        command: >
+            sh -c "composer install -d /app &&
+            cp /app/docker.global.php /app/config/autoload &&
+            /app/vendor/bin/zend-expressive-swoole start"
 
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:6.6.2
-        container_name: elasticsearch
+        container_name: elasticsearch_662
         environment:
-          - cluster.name=docker-cluster
-          - bootstrap.memory_lock=true
-          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        ulimits:
-          memlock:
-            soft: -1
-            hard: -1
+          - http.host=0.0.0.0
+          - transport.host=0.0.0.0
+          - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
         volumes:
-          - esdata1:/usr/share/elasticsearch/data
+          - esdata:/usr/share/elasticsearch/data
+          - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
         ports:
           - 9200:9200
-        networks:
-          - esnet
-
-    elasticsearch2:
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.6.2
-        container_name: elasticsearch2
-        environment:
-          - cluster.name=docker-cluster
-          - bootstrap.memory_lock=true
-          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-          - "discovery.zen.ping.unicast.hosts=elasticsearch"
+          - 9300:9300
         ulimits:
           memlock:
             soft: -1
             hard: -1
+          nofile:
+            soft: 65536
+            hard: 65536
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:6.6.2
+        container_name: kibana_662
+        environment:
+          - SERVER_HOST=0.0.0.0
         volumes:
-          - esdata2:/usr/share/elasticsearch/data
-        networks:
-          - esnet
+          - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+        ports:
+          - 5601:5601
 
 volumes:
-  esdata1:
+  esdata:
     driver: local
-  esdata2:
-    driver: local
-
-networks:
-  esnet:
